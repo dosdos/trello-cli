@@ -1,0 +1,26 @@
+TRELLO_BOARD_FIXTURE = [
+    {
+        'closed': False,
+        'creationMethod': None,
+        'dateLastActivity': '2019-02-12T13:34:00.614Z',
+        'dateLastView': '2019-02-05T18:25:43.064Z',
+        'desc': 'Test Board Desc',
+        'id': '123',
+        'name': 'Test Board Name',
+        'pinned': True,
+        'powerUps': [],
+        'url': 'https://trello.com/b/001',
+    },
+    {
+        'closed': False,
+        'creationMethod': None,
+        'dateLastActivity': '2019-02-12T13:34:00.614Z',
+        'dateLastView': '2019-02-05T18:43:49.064Z',
+        'desc': 'Test Board Desc',
+        'id': '123',
+        'name': 'Test Board Name',
+        'pinned': True,
+        'powerUps': [],
+        'url': 'https://trello.com/b/002',
+    },
+]
