@@ -28,6 +28,11 @@ TBD
 * Dependencies
 * Database configuration
 * How to run tests
+
+```
+$ python -m unittest
+```
+
 * Deployment instructions
 
 ### Contribution guidelines ###
