@@ -1,3 +1,8 @@
+from typing import Any, List
+
+import requests
+
+
 class Board:
     """
     Trello Boards.
@@ -52,3 +57,24 @@ class Card:
 
     def __repr__(self) -> str:
         return f'Card "{self.name}" [Board ID {self.board_id}]'
+
+
+class TrelloClient:
+    API_DOMAIN = 'https://api.trello.com/1/'
+    API_BOARDS = 'members/me/boards/'
+
+    def __init__(self, api_key: str, token: str) -> None:
+        self.session = requests.Session()
+        self.key = api_key
+        self.token = token
+
+    def api_request(self, path: str, method: str = 'GET') -> Any:
+        url = f'{self.API_DOMAIN}{path}'
+        params = {'key': self.key, 'token': self.token}
+        response = self.session.request(method, url, params=params)
+        return response.json()
+
+    def get_board_list(self) -> List[Board]:
+        """Get the full list of Trello boards (both open and closed)."""
+        response = self.api_request(path=self.API_BOARDS)
+        return [Board(json_obj) for json_obj in response]
