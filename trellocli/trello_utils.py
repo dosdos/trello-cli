@@ -62,15 +62,18 @@ class Card:
 class TrelloClient:
     API_DOMAIN = 'https://api.trello.com/1/'
     API_BOARDS = 'members/me/boards/'
+    API_BOARD_COLUMNS = 'boards/{board_id}/lists/'
 
     def __init__(self, api_key: str, token: str) -> None:
         self.session = requests.Session()
+        self.session.headers.update({'content-type': 'application/json'})
         self.key = api_key
         self.token = token
 
-    def api_request(self, path: str, method: str = 'GET') -> Any:
+    def api_request(self, path: str, method: str = 'GET', **extra_params) -> Any:
         url = f'{self.API_DOMAIN}{path}'
         params = {'key': self.key, 'token': self.token}
+        params.update(**extra_params)
         response = self.session.request(method, url, params=params)
         return response.json()
 
@@ -78,3 +81,9 @@ class TrelloClient:
         """Get the full list of Trello boards (both open and closed)."""
         response = self.api_request(path=self.API_BOARDS)
         return [Board(json_obj) for json_obj in response]
+
+    def get_board_columns(self, board_id: str) -> List[Column]:
+        query_params = {'cards': 'none', 'filter': 'open'}
+        url = self.API_BOARD_COLUMNS.format(board_id=board_id)
+        response = self.api_request(path=url, **query_params)
+        return [Column(json_obj) for json_obj in response]
