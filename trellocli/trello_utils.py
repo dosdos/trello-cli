@@ -63,6 +63,9 @@ class TrelloClient:
     API_DOMAIN = 'https://api.trello.com/1/'
     API_BOARDS = 'members/me/boards/'
     API_BOARD_COLUMNS = 'boards/{board_id}/lists/'
+    API_CARDS = 'cards/'
+    API_COMMENTS = 'cards/{card_id}/actions/comments/'
+    API_LABELS = 'cards/{card_id}/labels/'
 
     def __init__(self, api_key: str, token: str) -> None:
         self.session = requests.Session()
@@ -87,3 +90,40 @@ class TrelloClient:
         url = self.API_BOARD_COLUMNS.format(board_id=board_id)
         response = self.api_request(path=url, **query_params)
         return [Column(json_obj) for json_obj in response]
+
+    def create_card(self, column_id: str, name: str, comment: str, labels: List[str]) -> Card:
+
+        # Call Trello API to create a new card
+        query_params = {'name': name, 'idList': column_id}
+        response = self.api_request(
+            path=self.API_CARDS,
+            method='POST',
+            **query_params,
+        )
+        card = Card(response)
+        card.comment = comment
+        card.labels = list(set(labels))  # Remove duplicates
+
+        # Call Trello API to associate a new comment to that card
+        query_params = {'text': comment}
+        response = self.api_request(
+            path=self.API_COMMENTS.format(card_id=card.id),
+            method='POST',
+            **query_params,
+        )
+        card.comment_id = response['id']
+        card.label_ids = response['id']
+
+        # Call Trello API to associate the list of new labels to that card
+        label_ids = []
+        for label in card.labels:
+            query_params = {'color': 'lime', 'name': label}
+            response = self.api_request(
+                path=self.API_LABELS.format(card_id=card.id),
+                method='POST',
+                **query_params,
+            )
+            label_ids.append(response['id'])
+        card.label_ids = label_ids
+
+        return card
