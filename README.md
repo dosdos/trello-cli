@@ -1,10 +1,43 @@
-# README #
+# Trello interactive CLI #
 
-This tool is a Python wrapper around Trello REST API (just a couple of them).
 
-First, you need to get an API key from [Trello Developer API Keys page](https://trello.com/app-key).
+### What is this repository for? ###
+This tool is a Python wrapper around Trello REST API able to interact with Trello boards from the command line.
+
+The current version '1.0' allows to:
+* Get the list of your Trello boards
+* Get the list of the columns in a given Trello board
+* Create a new card in a given column of a board
+
+### How do I get set up locally? ###
+First, clone the project:
+
+```
+$ git git clone git@bitbucket.org:Dosdos/trello-cli.git
+```
+
+Second, you need to get an API key from [Trello Developer API Keys page](https://trello.com/app-key).
 Make sure to paste them in the `.env` file, that you need to create in the `trellocli` folder.
 Look at the [.env.template](trellocli/.env.template) file to get an example.
+
+The tool is depending on [Typer](https://typer.tiangolo.com/), then you need to install it.
+A requirement file is included, so you can easily setup a virtualenv and install it.
+
+For example, if you use *virtualenvwrapper*, you can create a new env
+```
+$ mkvirtualenv -p python3 trellocli
+```
+
+or execute an existing one:
+```
+$ workon trellocli
+```
+
+Move to the root folder of the `trellocli` project and use pip to update dependencies from the requirements file:
+```
+$ cd trellocli
+$ pip3 install -r requirements-local.txt
+```
 
 Now you can run the script using `python -m`; the `-m` option helps to run the library module as a script.
 
@@ -14,38 +47,27 @@ Try it out:
 $ python -m trellocli --help
 ```
 
-### What is this repository for? ###
+### Run tests ###
 
-TBD
-* Quick summary
-* Version
-
-### How do I get set up? ###
-
-TBD
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
+To run unit tests simply type:
 
 ```
 $ python -m unittest
 ```
 
-* Deployment instructions
-
 ### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+Feel free to:
+* Writing more tests
+* Doing code review
+* Add comments
 
 ### Who do I talk to? ###
 
 * Repo owner or admin: dosdos
 * Contact: dav.santucci@gmail.com
 
-Further readings:
-https://github.com/sarumont/py-trello
-https://github.com/Sachin-chaurasiya/Typer-Todo-CLI/tree/main/todo
+### Further readings ###
+* [py-trello](https://github.com/sarumont/py-trello): a nice Python wrapper for Trello API
+* [Typer-Todo-CLI](https://github.com/Sachin-chaurasiya/Typer-Todo-CLI/tree/main/todo): a simple example to start with Typer
+* [unittest](https://docs.python.org/3/library/unittest.html): the official docs about unittest
