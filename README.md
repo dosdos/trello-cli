@@ -5,6 +5,7 @@
 This tool is a Python wrapper around Trello REST API able to interact with Trello boards from the command line.
 
 The current version '1.0' allows to:
+
 * Get the list of your Trello boards
 * Get the list of the columns in a given Trello board
 * Create a new card in a given column of a board
@@ -47,6 +48,28 @@ Try it out:
 $ python -m trellocli --help
 ```
 
+### How does it work? ###
+You can use the tool to:
+
+* Get the list of your Trello boards:
+
+```
+$ python -m trellocli list-boards
+```
+
+* Pick a *Board ID* from the previous response and get the list of the columns in that Trello board:
+
+```
+$ python -m trellocli list-columns <board-id>
+```
+
+* Pick a *Column ID* from the previous response and create a new card (follow the instruction to add a comment and labels):
+
+```
+$ python -m trellocli create-card -c <column-id>
+```
+
+
 ### Run tests ###
 
 To run unit tests simply type:
@@ -58,6 +81,7 @@ $ python -m unittest
 ### Contribution guidelines ###
 
 Feel free to:
+
 * Writing more tests
 * Doing code review
 * Add comments
