@@ -1,9 +1,10 @@
-import typer
+from . import cli, __app_name__
 
 
-def main(name: str):
-    typer.echo(f'Hello {name}')
+def main():
+    cli.app(prog_name=__app_name__)
 
 
 if __name__ == '__main__':
-    typer.run(main)
+    """Entry point script"""
+    main()
