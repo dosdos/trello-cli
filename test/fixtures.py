@@ -1,4 +1,4 @@
-TRELLO_BOARD_FIXTURE = [
+TRELLO_BOARDS_FIXTURE = [
     {
         'closed': False,
         'creationMethod': None,
@@ -22,5 +22,34 @@ TRELLO_BOARD_FIXTURE = [
         'pinned': True,
         'powerUps': [],
         'url': 'https://trello.com/b/002',
+    },
+]
+TRELLO_COLUMNS_FIXTURE = [
+    {
+        'closed': False,
+        'id': 'abc-1',
+        'idBoard': '123',
+        'name': 'Col Name',
+        'pos': 1,
+        'softLimit': None,
+        'subscribed': False,
+    },
+    {
+        'closed': False,
+        'id': 'abc-2',
+        'idBoard': '123',
+        'name': 'Col Name',
+        'pos': 2,
+        'softLimit': None,
+        'subscribed': False,
+    },
+    {
+        'closed': False,
+        'id': 'abc-3',
+        'idBoard': '123',
+        'name': 'Col Name',
+        'pos': 3,
+        'softLimit': None,
+        'subscribed': False,
     },
 ]
