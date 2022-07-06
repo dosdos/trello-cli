@@ -55,7 +55,7 @@ def list_boards() -> None:
 
 
 @app.command(name='list-columns')
-def list_cards_by_board_id(board_id: str = typer.Argument(...)) -> None:
+def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
     """Get the list of columns by board ID."""
     trello_connector = get_trello_connector()
     board_columns = trello_connector.get_board_columns(board_id)
