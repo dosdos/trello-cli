@@ -10,16 +10,10 @@ app = typer.Typer()
 
 def get_trello_connector() -> TrelloClient:
     if not config.TRELLO_API_KEY:
-        typer.secho(
-            'Trello API key not found. Please, set the TRELLO_API_KEY value in the .env file.',
-            fg=typer.colors.RED,
-        )
+        typer.secho(config.MSG_API_KEY_NOT_FOUND, fg=typer.colors.RED)
         raise typer.Exit(1)
     if not config.TRELLO_API_TOKEN:
-        typer.secho(
-            'Trello API token not found. Please, set the TRELLO_API_TOKEN value in the .env file.',
-            fg=typer.colors.RED,
-        )
+        typer.secho(config.MSG_API_TOKEN_NOT_FOUND, fg=typer.colors.RED)
         raise typer.Exit(1)
     return TrelloClient(config.TRELLO_API_KEY, config.TRELLO_API_TOKEN)
 
@@ -35,7 +29,7 @@ def list_boards() -> None:
         raise typer.Exit(1)
 
     if len(board_list) == 0:
-        typer.secho('No boards found.', fg=typer.colors.YELLOW)
+        typer.secho(config.MSG_BOARDS_FOUND, fg=typer.colors.YELLOW)
         raise typer.Exit()
 
     columns = (
@@ -69,7 +63,7 @@ def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
         raise typer.Exit(1)
 
     if len(board_columns) == 0:
-        typer.secho('No columns found for this board.', fg=typer.colors.YELLOW)
+        typer.secho(config.MSG_COLUMNS_FOUND, fg=typer.colors.YELLOW)
         raise typer.Exit()
 
     columns = (
@@ -92,22 +86,10 @@ def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
 
 @app.command(name='create-card')
 def create_card_by_column_id(
-        column_id: str = typer.Option(..., '--column', '-c', help='The ID of the column where the card will be added.'),
-        name: str = typer.Option(
-            ...,
-            prompt='Add the title of the new card',
-            help='The name is the title of the card.',
-        ),
-        comment: str = typer.Option(
-            ...,
-            prompt='Add a comment to the new card',
-            help='The comment is added to the new cards.',
-        ),
-        labels: str = typer.Option(
-            ...,
-            prompt='Add a list of labels separated by spaces',
-            help='Ensure the label is done by a single word.',
-        ),
+        column_id: str = typer.Option(..., '--column', '-c', help=config.MSG_COL_ID_HELP),
+        name: str = typer.Option(..., prompt=config.MSG_NAME_PROMPT, help=config.MSG_NAME_HELP),
+        comment: str = typer.Option(..., prompt=config.MSG_COMMENT_PROMPT, help=config.MSG_COMMENT_HELP),
+        labels: str = typer.Option(..., prompt=config.MSG_LABELS_PROMPT, help=config.MSG_LABELS_HELP),
 ) -> None:
     """Create a new Trello card given the the board column ID."""
     trello_connector = get_trello_connector()
@@ -117,7 +99,7 @@ def create_card_by_column_id(
         typer.secho(e, fg=typer.colors.RED)
         raise typer.Exit(1)
 
-    typer.secho('A new Trello card has been created with ID ' + card.id, fg=typer.colors.BLUE, bold=True)
+    typer.secho(config.MSG_NEW_CARD_ADDED + card.id, fg=typer.colors.BLUE, bold=True)
     typer.secho('-' * 67, fg=typer.colors.BLUE)
     card_fields = ('board_id', 'column_id', 'name', 'comment', 'comment_id', 'pos', 'short_url', 'labels', 'label_ids')
     for idx, field in enumerate(card_fields, 1):
