@@ -91,7 +91,19 @@ Feel free to:
 * Repo owner or admin: dosdos
 * Contact: dav.santucci@gmail.com
 
-### Further readings ###
+### What's next? ###
+
+Further readings (and some links where I got inspiration from):
+
+* [Trello REST API](https://developer.atlassian.com/cloud/trello/rest/api-group-cards/#api-cards-post): the official Trello API documentation
 * [py-trello](https://github.com/sarumont/py-trello): a nice Python wrapper for Trello API
 * [Typer-Todo-CLI](https://github.com/Sachin-chaurasiya/Typer-Todo-CLI/tree/main/todo): a simple example to start with Typer
 * [unittest](https://docs.python.org/3/library/unittest.html): the official docs about unittest
+
+Next developments:
+
+* Increase unit tests coverage (e.g. cli commands and exceptions cases)
+* Add integration tests for Trello API (need a Trello board for testing purposes)
+* Give a better structure to trello utils (atm objects, exceptions and functions live together)
+* Clean constants all around the code
+* Implement more functions (e.g. create columns, move cards, ...)
