@@ -59,6 +59,21 @@ class Card:
         return f'Card "{self.name}" [Board ID {self.board_id}]'
 
 
+class ResourceUnavailable(Exception):
+    def __init__(self, msg, http_response):
+        Exception.__init__(self)
+        self._msg = msg
+        self._status = http_response.status_code
+
+    def __str__(self):
+        return "Resource not available (%s)" % self._msg
+
+
+class Unauthorized(ResourceUnavailable):
+    def __str__(self):
+        return "Client not authorized (%s)" % self._msg
+
+
 class TrelloClient:
     API_DOMAIN = 'https://api.trello.com/1/'
     API_BOARDS = 'members/me/boards/'
@@ -78,6 +93,10 @@ class TrelloClient:
         params = {'key': self.key, 'token': self.token}
         params.update(**extra_params)
         response = self.session.request(method, url, params=params)
+        if response.status_code == 401:
+            raise Unauthorized(response.text, response)
+        if response.status_code // 100 != 2:
+            raise ResourceUnavailable("%s at %s" % (response.text, path), response)
         return response.json()
 
     def get_board_list(self) -> List[Board]:

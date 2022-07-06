@@ -28,7 +28,11 @@ def get_trello_connector() -> TrelloClient:
 def list_boards() -> None:
     """Get the list of Trello boards with name and ID."""
     trello_connector = get_trello_connector()
-    board_list = trello_connector.get_board_list()
+    try:
+        board_list = trello_connector.get_board_list()
+    except Exception as e:
+        typer.secho(e, fg=typer.colors.RED)
+        raise typer.Exit(1)
 
     if len(board_list) == 0:
         typer.secho('No boards found.', fg=typer.colors.YELLOW)
@@ -58,7 +62,11 @@ def list_boards() -> None:
 def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
     """Get the list of columns by board ID."""
     trello_connector = get_trello_connector()
-    board_columns = trello_connector.get_board_columns(board_id)
+    try:
+        board_columns = trello_connector.get_board_columns(board_id)
+    except Exception as e:
+        typer.secho(e, fg=typer.colors.RED)
+        raise typer.Exit(1)
 
     if len(board_columns) == 0:
         typer.secho('No columns found for this board.', fg=typer.colors.YELLOW)
@@ -103,7 +111,11 @@ def create_card_by_column_id(
 ) -> None:
     """Create a new Trello card given the the board column ID."""
     trello_connector = get_trello_connector()
-    card = trello_connector.create_card(column_id, name, comment, labels.split())
+    try:
+        card = trello_connector.create_card(column_id, name, comment, labels.split())
+    except Exception as e:
+        typer.secho(e, fg=typer.colors.RED)
+        raise typer.Exit(1)
 
     typer.secho('A new Trello card has been created with ID ' + card.id, fg=typer.colors.BLUE, bold=True)
     typer.secho('-' * 67, fg=typer.colors.BLUE)
