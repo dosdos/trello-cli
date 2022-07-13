@@ -3,6 +3,7 @@ from typing import Optional
 import typer
 
 from . import __app_name__, __app_version__, config
+from .cli_printer import CliPrinter
 from .trello_utils import TrelloClient
 
 app = typer.Typer()
@@ -47,25 +48,8 @@ def list_boards() -> None:
     if len(board_list) == 0:
         typer.secho(config.MSG_BOARDS_FOUND, fg=YELLOW)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
-
-    columns = (
-        '#  ',
-        '| Board ID                   ',
-        '| Board Name                 ',
-        '| Closed  ',
-    )
-    headers = ''.join(columns)
-    typer.secho(headers, fg=BLUE, bold=True)
-    typer.secho('-' * len(headers), fg=BLUE)
-    for idx, board in enumerate(board_list, 1):
-        typer.secho(
-            f'{idx}{(len(columns[0]) - len(str(idx))) * " "}'
-            f'| [{board.id}] '
-            f'| {board.name[:27]}{(len(columns[2]) - len(str(board.name)) - 2) * " "}'
-            f'| {board.closed}',
-            fg=BLUE,
-        )
-    typer.secho('-' * len(headers) + '\n', fg=BLUE)
+    printer = CliPrinter(color=BLUE)
+    printer.print_boards(boards=board_list)
 
 
 @app.command(name='list-columns')
@@ -81,23 +65,8 @@ def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
     if len(board_columns) == 0:
         typer.secho(config.MSG_COLUMNS_FOUND, fg=YELLOW)
         raise typer.Exit(code=SUCCESS_CODE)
-
-    columns = (
-        '#  ',
-        '| Column ID                  ',
-        '| Column Name       ',
-    )
-    headers = ''.join(columns)
-    typer.secho(headers, fg=BLUE, bold=True)
-    typer.secho('-' * len(headers), fg=BLUE)
-    for idx, col in enumerate(board_columns, 1):
-        typer.secho(
-            f'{idx}{(len(columns[0]) - len(str(idx))) * " "}'
-            f'| [{col.id}] '
-            f'| {col.name[:27]}{(len(columns[2]) - len(str(col.name)) - 2) * " "}',
-            fg=BLUE,
-        )
-    typer.secho('-' * len(headers) + '\n', fg=BLUE)
+    printer = CliPrinter(color=BLUE)
+    printer.print_columns(columns=board_columns)
 
 
 @app.command(name='create-card')
@@ -114,18 +83,8 @@ def create_card_by_column_id(
     except Exception as e:
         typer.secho(e, fg=RED)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
-
-    typer.secho(config.MSG_NEW_CARD_ADDED % card.id, fg=BLUE, bold=True)
-    typer.secho('-' * 67, fg=BLUE)
-    card_fields = ('board_id', 'column_id', 'name', 'comment', 'comment_id', 'pos', 'short_url', 'labels', 'label_ids')
-    for idx, field in enumerate(card_fields, 1):
-        typer.secho(
-            f'{idx}  '
-            f'| {field}{(11 - len(field)) * " "}'
-            f'| {getattr(card, field)}{(33 - len(field)) * " "}',
-            fg=BLUE,
-        )
-    typer.secho('-' * 67, fg=BLUE)
+    printer = CliPrinter(color=BLUE)
+    printer.print_card(card=card)
 
 
 @app.callback()
