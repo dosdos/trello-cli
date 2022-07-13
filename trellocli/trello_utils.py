@@ -94,7 +94,7 @@ class TrelloClient:
         self.key = api_key
         self.token = token
 
-    def api_request(self, path: str, method: str = 'GET', **extra_params) -> Any:
+    def _api_request(self, path: str, method: str = 'GET', **extra_params) -> Any:
         url = f'{self.API_DOMAIN}{path}'
         params = {'key': self.key, 'token': self.token}
         params.update(**extra_params)
@@ -107,20 +107,20 @@ class TrelloClient:
 
     def get_board_list(self) -> List[Board]:
         """Get the full list of Trello boards (both open and closed)."""
-        response = self.api_request(path=self.API_BOARDS)
+        response = self._api_request(path=self.API_BOARDS)
         return [Board(json_obj) for json_obj in response]
 
     def get_board_columns(self, board_id: str) -> List[Column]:
         query_params = {'cards': 'none', 'filter': 'open'}
         url = self.API_BOARD_COLUMNS.format(board_id=board_id)
-        response = self.api_request(path=url, **query_params)
+        response = self._api_request(path=url, **query_params)
         return [Column(json_obj) for json_obj in response]
 
     def create_card(self, column_id: str, name: str, comment: str, labels: List[str]) -> Card:
 
         # Call Trello API to create a new card
         query_params = {'name': name, 'idList': column_id}
-        response = self.api_request(
+        response = self._api_request(
             path=self.API_CARDS,
             method='POST',
             **query_params,
@@ -131,7 +131,7 @@ class TrelloClient:
 
         # Call Trello API to associate a new comment to that card
         query_params = {'text': comment}
-        response = self.api_request(
+        response = self._api_request(
             path=self.API_COMMENTS.format(card_id=card.id),
             method='POST',
             **query_params,
@@ -143,7 +143,7 @@ class TrelloClient:
         label_ids = []
         for label in card.labels:
             query_params = {'color': 'lime', 'name': label}
-            response = self.api_request(
+            response = self._api_request(
                 path=self.API_LABELS.format(card_id=card.id),
                 method='POST',
                 **query_params,
