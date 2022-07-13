@@ -101,7 +101,7 @@ class TrelloClient:
         response = self.session.request(method, url, params=params)
         if response.status_code == 401:
             raise Unauthorized(response.text, response)
-        if response.status_code // 100 != 2:
+        if not (200 <= response.status_code < 300):
             raise ResourceUnavailable("%s at %s" % (response.text, path), response)
         return response.json()
 
