@@ -29,7 +29,7 @@ def mocked_requests(*args, **kwargs):
     return MockResponse(None, 404)
 
 
-class TestCLI(unittest.TestCase):
+class TestTrelloClient(unittest.TestCase):
     def setUp(self) -> None:
         self.test_key = 'TEST-TRELLO-API-KEY'
         self.test_token = 'TEST-TRELLO-API-TOKEN'
