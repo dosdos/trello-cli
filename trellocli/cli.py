@@ -99,7 +99,7 @@ def create_card_by_column_id(
         typer.secho(e, fg=typer.colors.RED)
         raise typer.Exit(1)
 
-    typer.secho(config.MSG_NEW_CARD_ADDED + card.id, fg=typer.colors.BLUE, bold=True)
+    typer.secho(config.MSG_NEW_CARD_ADDED % card.id, fg=typer.colors.BLUE, bold=True)
     typer.secho('-' * 67, fg=typer.colors.BLUE)
     card_fields = ('board_id', 'column_id', 'name', 'comment', 'comment_id', 'pos', 'short_url', 'labels', 'label_ids')
     for idx, field in enumerate(card_fields, 1):
