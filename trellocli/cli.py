@@ -19,13 +19,17 @@ ERROR_LABELS = {
     JSON_ERROR_CODE: "json codification error",
 }
 
+BLUE = typer.colors.BLUE
+RED = typer.colors.RED
+YELLOW = typer.colors.YELLOW
+
 
 def get_trello_connector() -> TrelloClient:
     if not config.TRELLO_API_KEY:
-        typer.secho(config.MSG_API_KEY_NOT_FOUND, fg=typer.colors.RED)
+        typer.secho(config.MSG_API_KEY_NOT_FOUND, fg=RED)
         raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
     if not config.TRELLO_API_TOKEN:
-        typer.secho(config.MSG_API_TOKEN_NOT_FOUND, fg=typer.colors.RED)
+        typer.secho(config.MSG_API_TOKEN_NOT_FOUND, fg=RED)
         raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
     return TrelloClient(config.TRELLO_API_KEY, config.TRELLO_API_TOKEN)
 
@@ -37,11 +41,11 @@ def list_boards() -> None:
     try:
         board_list = trello_connector.get_board_list()
     except Exception as e:
-        typer.secho(e, fg=typer.colors.RED)
+        typer.secho(e, fg=RED)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
 
     if len(board_list) == 0:
-        typer.secho(config.MSG_BOARDS_FOUND, fg=typer.colors.YELLOW)
+        typer.secho(config.MSG_BOARDS_FOUND, fg=YELLOW)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
 
     columns = (
@@ -51,17 +55,17 @@ def list_boards() -> None:
         '| Closed  ',
     )
     headers = ''.join(columns)
-    typer.secho(headers, fg=typer.colors.BLUE, bold=True)
-    typer.secho('-' * len(headers), fg=typer.colors.BLUE)
+    typer.secho(headers, fg=BLUE, bold=True)
+    typer.secho('-' * len(headers), fg=BLUE)
     for idx, board in enumerate(board_list, 1):
         typer.secho(
             f'{idx}{(len(columns[0]) - len(str(idx))) * " "}'
             f'| [{board.id}] '
             f'| {board.name[:27]}{(len(columns[2]) - len(str(board.name)) - 2) * " "}'
             f'| {board.closed}',
-            fg=typer.colors.BLUE,
+            fg=BLUE,
         )
-    typer.secho('-' * len(headers) + '\n', fg=typer.colors.BLUE)
+    typer.secho('-' * len(headers) + '\n', fg=BLUE)
 
 
 @app.command(name='list-columns')
@@ -71,11 +75,11 @@ def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
     try:
         board_columns = trello_connector.get_board_columns(board_id)
     except Exception as e:
-        typer.secho(e, fg=typer.colors.RED)
+        typer.secho(e, fg=RED)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
 
     if len(board_columns) == 0:
-        typer.secho(config.MSG_COLUMNS_FOUND, fg=typer.colors.YELLOW)
+        typer.secho(config.MSG_COLUMNS_FOUND, fg=YELLOW)
         raise typer.Exit(code=SUCCESS_CODE)
 
     columns = (
@@ -84,16 +88,16 @@ def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
         '| Column Name       ',
     )
     headers = ''.join(columns)
-    typer.secho(headers, fg=typer.colors.BLUE, bold=True)
-    typer.secho('-' * len(headers), fg=typer.colors.BLUE)
+    typer.secho(headers, fg=BLUE, bold=True)
+    typer.secho('-' * len(headers), fg=BLUE)
     for idx, col in enumerate(board_columns, 1):
         typer.secho(
             f'{idx}{(len(columns[0]) - len(str(idx))) * " "}'
             f'| [{col.id}] '
             f'| {col.name[:27]}{(len(columns[2]) - len(str(col.name)) - 2) * " "}',
-            fg=typer.colors.BLUE,
+            fg=BLUE,
         )
-    typer.secho('-' * len(headers) + '\n', fg=typer.colors.BLUE)
+    typer.secho('-' * len(headers) + '\n', fg=BLUE)
 
 
 @app.command(name='create-card')
@@ -108,20 +112,20 @@ def create_card_by_column_id(
     try:
         card = trello_connector.create_card(column_id, name, comment, labels.split())
     except Exception as e:
-        typer.secho(e, fg=typer.colors.RED)
+        typer.secho(e, fg=RED)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
 
-    typer.secho(config.MSG_NEW_CARD_ADDED % card.id, fg=typer.colors.BLUE, bold=True)
-    typer.secho('-' * 67, fg=typer.colors.BLUE)
+    typer.secho(config.MSG_NEW_CARD_ADDED % card.id, fg=BLUE, bold=True)
+    typer.secho('-' * 67, fg=BLUE)
     card_fields = ('board_id', 'column_id', 'name', 'comment', 'comment_id', 'pos', 'short_url', 'labels', 'label_ids')
     for idx, field in enumerate(card_fields, 1):
         typer.secho(
             f'{idx}  '
             f'| {field}{(11 - len(field)) * " "}'
             f'| {getattr(card, field)}{(33 - len(field)) * " "}',
-            fg=typer.colors.BLUE,
+            fg=BLUE,
         )
-    typer.secho('-' * 67, fg=typer.colors.BLUE)
+    typer.secho('-' * 67, fg=BLUE)
 
 
 @app.callback()
