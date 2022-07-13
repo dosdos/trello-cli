@@ -149,6 +149,5 @@ class TrelloClient:
                 **query_params,
             )
             label_ids.append(response['id'])
-        card.label_ids = label_ids
 
         return card
