@@ -1,11 +1,14 @@
+import os
 from typing import Optional
 
 import typer
+from dotenv import load_dotenv
 
 from . import __app_name__, __app_version__, config
 from .cli_printer import CliPrinter
 from .trello_utils import TrelloClient
 
+load_dotenv()
 app = typer.Typer()
 
 SUCCESS_CODE = 0
@@ -26,13 +29,15 @@ YELLOW = typer.colors.YELLOW
 
 
 def get_trello_connector() -> TrelloClient:
-    if not config.TRELLO_API_KEY:
+    trello_api_key = os.getenv('TRELLO_API_KEY', default=None)
+    trello_api_token = os.getenv('TRELLO_API_TOKEN', default=None)
+    if not trello_api_key:
         typer.secho(config.MSG_API_KEY_NOT_FOUND, fg=RED)
         raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
-    if not config.TRELLO_API_TOKEN:
+    if not trello_api_token:
         typer.secho(config.MSG_API_TOKEN_NOT_FOUND, fg=RED)
         raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
-    return TrelloClient(config.TRELLO_API_KEY, config.TRELLO_API_TOKEN)
+    return TrelloClient(trello_api_key, trello_api_token)
 
 
 @app.command(name='list-boards')
