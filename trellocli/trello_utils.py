@@ -11,13 +11,13 @@ class Board:
     Other fields are set empty when not provided.
     Docs: https://developer.atlassian.com/cloud/trello/rest/api-group-boards/#api-group-boards
     """
-    def __init__(self, json_obj: dict) -> None:
-        self.id = json_obj['id']  # required
-        self.name = json_obj['name']  # required
-        self.url = json_obj.get('url')
-        self.description = json_obj.get('desc')
-        self.closed = json_obj.get('closed')
-        self.starred = json_obj.get('starred')
+    def __init__(self, board_fields: dict) -> None:
+        self.id = board_fields['id']
+        self.name = board_fields['name']
+        self.url = board_fields.get('url')
+        self.description = board_fields.get('desc')
+        self.closed = board_fields.get('closed')
+        self.starred = board_fields.get('starred')
 
     def __repr__(self) -> str:
         return f'Board {self.name} [ID: {self.id}]'
@@ -31,11 +31,11 @@ class Column:
     Other fields are set empty when not provided.
     Docs: https://developer.atlassian.com/cloud/trello/rest/api-group-boards/#api-boards-id-lists-get
     """
-    def __init__(self, json_obj: dict) -> None:
-        self.id = json_obj['id']  # required
-        self.board_id = json_obj['idBoard']  # required (from the parent Board)
-        self.name = json_obj['name']  # required
-        self.pos = json_obj.get('pos')
+    def __init__(self, column_fields: dict) -> None:
+        self.id = column_fields['id']
+        self.board_id = column_fields['idBoard']
+        self.name = column_fields['name']
+        self.pos = column_fields.get('pos')
 
     def __repr__(self) -> str:
         return f'Column {self.name} [Board ID {self.board_id}]'
@@ -49,11 +49,11 @@ class Card:
     Other fields are set empty when not provided.
     Docs: https://developer.atlassian.com/cloud/trello/rest/api-group-cards/#api-group-cards
     """
-    def __init__(self, json_obj: dict) -> None:
-        self.id = json_obj['id']  # required
-        self.board_id = json_obj['idBoard']  # required (from the parent Board)
-        self.column_id = json_obj['idList']  # required (from the parent List)
-        self.name = json_obj.get('name')
+    def __init__(self, card_fields: dict) -> None:
+        self.id = card_fields['id']
+        self.board_id = card_fields['idBoard']
+        self.column_id = card_fields['idList']
+        self.name = card_fields.get('name')
         self.comment = ''
         self.comment_id = None
         self.pos = card_fields.get('pos')
