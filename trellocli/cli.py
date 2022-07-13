@@ -7,14 +7,26 @@ from .trello_utils import TrelloClient
 
 app = typer.Typer()
 
+SUCCESS_CODE = 0
+GENERIC_ERROR_CODE = 1
+MISSING_CONFIGURATION_CODE = 2
+JSON_ERROR_CODE = 3
+
+ERROR_LABELS = {
+    SUCCESS_CODE: "success",
+    GENERIC_ERROR_CODE: "generic error",
+    MISSING_CONFIGURATION_CODE: "missing configuration error",
+    JSON_ERROR_CODE: "json codification error",
+}
+
 
 def get_trello_connector() -> TrelloClient:
     if not config.TRELLO_API_KEY:
         typer.secho(config.MSG_API_KEY_NOT_FOUND, fg=typer.colors.RED)
-        raise typer.Exit(1)
+        raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
     if not config.TRELLO_API_TOKEN:
         typer.secho(config.MSG_API_TOKEN_NOT_FOUND, fg=typer.colors.RED)
-        raise typer.Exit(1)
+        raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
     return TrelloClient(config.TRELLO_API_KEY, config.TRELLO_API_TOKEN)
 
 
@@ -26,11 +38,11 @@ def list_boards() -> None:
         board_list = trello_connector.get_board_list()
     except Exception as e:
         typer.secho(e, fg=typer.colors.RED)
-        raise typer.Exit(1)
+        raise typer.Exit(code=GENERIC_ERROR_CODE)
 
     if len(board_list) == 0:
         typer.secho(config.MSG_BOARDS_FOUND, fg=typer.colors.YELLOW)
-        raise typer.Exit()
+        raise typer.Exit(code=GENERIC_ERROR_CODE)
 
     columns = (
         '#  ',
@@ -60,11 +72,11 @@ def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
         board_columns = trello_connector.get_board_columns(board_id)
     except Exception as e:
         typer.secho(e, fg=typer.colors.RED)
-        raise typer.Exit(1)
+        raise typer.Exit(code=GENERIC_ERROR_CODE)
 
     if len(board_columns) == 0:
         typer.secho(config.MSG_COLUMNS_FOUND, fg=typer.colors.YELLOW)
-        raise typer.Exit()
+        raise typer.Exit(code=SUCCESS_CODE)
 
     columns = (
         '#  ',
@@ -97,7 +109,7 @@ def create_card_by_column_id(
         card = trello_connector.create_card(column_id, name, comment, labels.split())
     except Exception as e:
         typer.secho(e, fg=typer.colors.RED)
-        raise typer.Exit(1)
+        raise typer.Exit(code=GENERIC_ERROR_CODE)
 
     typer.secho(config.MSG_NEW_CARD_ADDED % card.id, fg=typer.colors.BLUE, bold=True)
     typer.secho('-' * 67, fg=typer.colors.BLUE)
