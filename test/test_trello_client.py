@@ -41,6 +41,27 @@ class TestTrelloClient(unittest.TestCase):
         self.assertEqual(client.token, self.test_token)
 
     @mock.patch('trellocli.trello_utils.requests.sessions.Session.request', side_effect=mocked_requests)
+    def test_mocked_requests(self, mock_get) -> None:
+        """Test that the Trello client is returning the Board objects loaded from the fixture"""
+        # Test the mock of the get_board_list interface
+        self.trello_client.get_board_list()
+        self.assertEqual(list(mock_get.call_args)[0][0], 'GET')
+        self.assertEqual(list(mock_get.call_args)[0][1], self.trello_client.API_DOMAIN + self.trello_client.API_BOARDS)
+        self.assertEqual(list(mock_get.call_args)[1]['params']['key'], self.test_key)
+        self.assertEqual(list(mock_get.call_args)[1]['params']['token'], self.test_token)
+        # Test the mock of the get_board_list interface
+        self.trello_client.get_board_columns('123')
+        self.assertEqual(list(mock_get.call_args)[0][0], 'GET')
+        self.assertEqual(
+            list(mock_get.call_args)[0][1],
+            self.trello_client.API_DOMAIN + self.trello_client.API_BOARD_COLUMNS.format(board_id='123'),
+            )
+        self.assertEqual(list(mock_get.call_args)[1]['params']['cards'], 'none')
+        self.assertEqual(list(mock_get.call_args)[1]['params']['filter'], 'open')
+        self.assertEqual(list(mock_get.call_args)[1]['params']['key'], self.test_key)
+        self.assertEqual(list(mock_get.call_args)[1]['params']['token'], self.test_token)
+
+    @mock.patch('trellocli.trello_utils.requests.sessions.Session.request', side_effect=mocked_requests)
     def test_get_board_list(self, mock_get) -> None:
         # Test that the Trello client is returning the Board objects loaded from the fixture
         board_list = self.trello_client.get_board_list()
@@ -49,11 +70,6 @@ class TestTrelloClient(unittest.TestCase):
             self.assertEqual(board.name, 'Test Board Name')
             self.assertEqual(board.description, 'Test Board Desc')
             self.assertFalse(board.closed)
-        # Test that mocked request was called with the right params
-        self.assertEqual(list(mock_get.call_args)[0][0], 'GET')
-        self.assertEqual(list(mock_get.call_args)[0][1], self.trello_client.API_DOMAIN + self.trello_client.API_BOARDS)
-        self.assertEqual(list(mock_get.call_args)[1]['params']['key'], self.test_key)
-        self.assertEqual(list(mock_get.call_args)[1]['params']['token'], self.test_token)
 
     @mock.patch('trellocli.trello_utils.requests.sessions.Session.request', side_effect=mocked_requests)
     def test_get_board_columns(self, mock_get) -> None:
@@ -64,13 +80,3 @@ class TestTrelloClient(unittest.TestCase):
             self.assertEqual(column.board_id, '123')
             self.assertEqual(column.name, 'Col Name')
             self.assertIsInstance(column.pos, int)
-        # Test that mocked request was called with the right params
-        self.assertEqual(list(mock_get.call_args)[0][0], 'GET')
-        self.assertEqual(
-            list(mock_get.call_args)[0][1],
-            self.trello_client.API_DOMAIN + self.trello_client.API_BOARD_COLUMNS.format(board_id='123'),
-        )
-        self.assertEqual(list(mock_get.call_args)[1]['params']['cards'], 'none')
-        self.assertEqual(list(mock_get.call_args)[1]['params']['filter'], 'open')
-        self.assertEqual(list(mock_get.call_args)[1]['params']['key'], self.test_key)
-        self.assertEqual(list(mock_get.call_args)[1]['params']['token'], self.test_token)
