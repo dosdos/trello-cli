@@ -1,6 +1,6 @@
 import typer
 
-from . import config
+from . import messages
 
 
 class CliPrinter:
@@ -52,7 +52,7 @@ class CliPrinter:
         typer.secho('-' * len(headers) + '\n', fg=self.color)
 
     def print_card(self, card):
-        typer.secho(config.MSG_NEW_CARD_ADDED % card.id, fg=self.color, bold=True)
+        typer.secho(messages.MSG_NEW_CARD_ADDED % card.id, fg=self.color, bold=True)
         typer.secho('-' * self.CARD_HEADER_LEN, fg=self.color)
         card_attrs = ('board_id', 'column_id', 'name', 'comment', 'comment_id', 'short_url', 'labels', 'label_ids')
         for idx, field in enumerate(card_attrs, 1):

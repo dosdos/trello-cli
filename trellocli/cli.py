@@ -4,7 +4,7 @@ from typing import Optional
 import typer
 from dotenv import load_dotenv
 
-from . import __app_name__, __app_version__, config
+from . import __app_name__, __app_version__, messages
 from .cli_printer import CliPrinter
 from .trello_utils import TrelloClient
 
@@ -32,10 +32,10 @@ def get_trello_connector() -> TrelloClient:
     trello_api_key = os.getenv('TRELLO_API_KEY', default=None)
     trello_api_token = os.getenv('TRELLO_API_TOKEN', default=None)
     if not trello_api_key:
-        typer.secho(config.MSG_API_KEY_NOT_FOUND, fg=RED)
+        typer.secho(messages.MSG_API_KEY_NOT_FOUND, fg=RED)
         raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
     if not trello_api_token:
-        typer.secho(config.MSG_API_TOKEN_NOT_FOUND, fg=RED)
+        typer.secho(messages.MSG_API_TOKEN_NOT_FOUND, fg=RED)
         raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
     return TrelloClient(trello_api_key, trello_api_token)
 
@@ -51,7 +51,7 @@ def list_boards() -> None:
         raise typer.Exit(code=GENERIC_ERROR_CODE)
 
     if len(board_list) == 0:
-        typer.secho(config.MSG_BOARDS_FOUND, fg=YELLOW)
+        typer.secho(messages.MSG_BOARDS_FOUND, fg=YELLOW)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
     printer = CliPrinter(color=BLUE)
     printer.print_boards(boards=board_list)
@@ -68,7 +68,7 @@ def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
         raise typer.Exit(code=GENERIC_ERROR_CODE)
 
     if len(board_columns) == 0:
-        typer.secho(config.MSG_COLUMNS_FOUND, fg=YELLOW)
+        typer.secho(messages.MSG_COLUMNS_FOUND, fg=YELLOW)
         raise typer.Exit(code=SUCCESS_CODE)
     printer = CliPrinter(color=BLUE)
     printer.print_columns(columns=board_columns)
@@ -76,10 +76,10 @@ def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
 
 @app.command(name='create-card')
 def create_card_by_column_id(
-        column_id: str = typer.Option(..., '--column', '-c', help=config.MSG_COL_ID_HELP),
-        name: str = typer.Option(..., prompt=config.MSG_NAME_PROMPT, help=config.MSG_NAME_HELP),
-        comment: str = typer.Option(..., prompt=config.MSG_COMMENT_PROMPT, help=config.MSG_COMMENT_HELP),
-        labels: str = typer.Option(..., prompt=config.MSG_LABELS_PROMPT, help=config.MSG_LABELS_HELP),
+        column_id: str = typer.Option(..., '--column', '-c', help=messages.MSG_COL_ID_HELP),
+        name: str = typer.Option(..., prompt=messages.MSG_NAME_PROMPT, help=messages.MSG_NAME_HELP),
+        comment: str = typer.Option(..., prompt=messages.MSG_COMMENT_PROMPT, help=messages.MSG_COMMENT_HELP),
+        labels: str = typer.Option(..., prompt=messages.MSG_LABELS_PROMPT, help=messages.MSG_LABELS_HELP),
 ) -> None:
     """Create a new Trello card given the the board column ID."""
     trello_connector = get_trello_connector()
@@ -98,7 +98,7 @@ def main(
             None,
             '--version',
             '-v',
-            help=config.MSG_ECHO_VERSION,
+            help=messages.MSG_ECHO_VERSION,
             is_eager=True,
         ),
 ) -> None:
