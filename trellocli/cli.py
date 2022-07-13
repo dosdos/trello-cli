@@ -112,21 +112,16 @@ def create_card_by_column_id(
     typer.secho('-' * 67, fg=typer.colors.BLUE)
 
 
-def _version_callback(val: bool) -> None:
-    if val:
-        typer.echo(f'{__app_name__} v{__app_version__}')
-        raise typer.Exit()
-
-
 @app.callback()
 def main(
         version: Optional[bool] = typer.Option(
             None,
             '--version',
             '-v',
-            help='Echo the app version and exit.',
-            callback=_version_callback,
+            help=config.MSG_ECHO_VERSION,
             is_eager=True,
-        )
+        ),
 ) -> None:
+    if version:
+        typer.echo(f'{__app_name__} v{__app_version__}')
     return

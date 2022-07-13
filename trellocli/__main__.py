@@ -1,10 +1,5 @@
-from . import cli, __app_name__
-
-
-def main():
-    cli.app(prog_name=__app_name__)
-
+from . import cli
 
 if __name__ == '__main__':
-    """Entry point script"""
-    main()
+    """Entry point"""
+    cli.app()
