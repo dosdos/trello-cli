@@ -141,7 +141,12 @@ class TrelloClient:
         return response['id']
 
     def create_card(self, column_id: str, name: str, comment: str, labels: List[str]) -> Card:
-        """Create a new Trello card by a given column ID. A name, a comment and a list of labels are required."""
+        """
+        Create a new Trello card by a given column ID. A name, a comment and a list of labels are required.
+
+        NB: this method is calling multiple Trello endpoint in cascade: if someone of them fail, the data stored on the
+        Trello card could be incomplete (e.g. missing labels).
+        """
 
         # Call Trello API to create a new card
         query_params = {'name': name, 'idList': column_id}
