@@ -95,6 +95,7 @@ class TrelloClient:
         self.token = token
 
     def _api_request(self, path: str, method: str = 'GET', **extra_params) -> Any:
+        """A simple tool that take a url, a method (GET is default) and querystring params to perform HTTP requests."""
         url = f'{self.API_DOMAIN}{path}'
         params = {'key': self.key, 'token': self.token}
         params.update(**extra_params)
@@ -111,12 +112,36 @@ class TrelloClient:
         return [Board(json_obj) for json_obj in response]
 
     def get_board_columns(self, board_id: str) -> List[Column]:
+        """Get the list of columns in a Trello boards (by a given board ID)."""
         query_params = {'cards': 'none', 'filter': 'open'}
         url = self.API_BOARD_COLUMNS.format(board_id=board_id)
         response = self._api_request(path=url, **query_params)
         return [Column(json_obj) for json_obj in response]
 
+    def create_comment(self, card_id: str, comment: str) -> str:
+        """Create a new comment and associate it to a Trello card (given by ID)."""
+        query_params = {'text': comment}
+        response = self._api_request(
+            path=self.API_COMMENTS.format(card_id=card_id),
+            method='POST',
+            **query_params,
+        )
+        # TODO: return a Comment object (not available yet) instead of a Trello comment ID
+        return response['id']
+
+    def create_label(self, card_id: str, label: str, color: str = 'lime') -> str:
+        """Create a new label (or get an existing one with same ID) and associate it to a Trello card (given by ID)."""
+        query_params = {'color': color, 'name': label}
+        response = self._api_request(
+            path=self.API_LABELS.format(card_id=card_id),
+            method='POST',
+            **query_params,
+        )
+        # TODO: return a Label object (not available yet) instead of a Trello label ID
+        return response['id']
+
     def create_card(self, column_id: str, name: str, comment: str, labels: List[str]) -> Card:
+        """Create a new Trello card by a given column ID. A name, a comment and a list of labels are required."""
 
         # Call Trello API to create a new card
         query_params = {'name': name, 'idList': column_id}
@@ -130,24 +155,13 @@ class TrelloClient:
         card.labels = list(set(labels))  # Remove duplicates
 
         # Call Trello API to associate a new comment to that card
-        query_params = {'text': comment}
-        response = self._api_request(
-            path=self.API_COMMENTS.format(card_id=card.id),
-            method='POST',
-            **query_params,
-        )
-        card.comment_id = response['id']
-        card.label_ids = response['id']
+        card.comment_id = self.create_comment(card_id=card.id, comment=comment)
 
         # Call Trello API to associate the list of new labels to that card
         label_ids = []
         for label in card.labels:
-            query_params = {'color': 'lime', 'name': label}
-            response = self._api_request(
-                path=self.API_LABELS.format(card_id=card.id),
-                method='POST',
-                **query_params,
-            )
-            label_ids.append(response['id'])
+            label_id = self.create_label(card_id=card.id, label=label)
+            label_ids.append(label_id)
+        card.label_ids = label_ids
 
         return card
