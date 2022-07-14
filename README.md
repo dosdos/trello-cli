@@ -17,14 +17,14 @@ First, clone the project:
 $ git git clone git@bitbucket.org:Dosdos/trello-cli.git
 ```
 
-Second, you need to get an API key from [Trello Developer API Keys page](https://trello.com/app-key).
+Second, you need to get the API key and the token from [Trello Developer API Keys page](https://trello.com/app-key).
 Make sure to paste them in the `.env` file, that you need to create in the `trellocli` folder.
 Look at the [.env.template](trellocli/.env.template) file to get an example.
 
-The tool is depending on [Typer](https://typer.tiangolo.com/), then you need to install it.
-A requirement file is included, so you can easily setup a virtualenv and install it.
+The tool has a couple of dependencies, such as [Typer](https://typer.tiangolo.com/), then you need to install them.
+A requirement file is included, so you can easily set up a virtualenv and install it.
 
-For example, if you use *virtualenvwrapper*, you can create a new env
+For example, if you use *virtualenvwrapper*, you can do thee following:
 ```
 $ mkvirtualenv -p python3 trellocli
 ```
@@ -40,7 +40,7 @@ $ cd trellocli
 $ pip3 install -r requirements-local.txt
 ```
 
-Now you can run the script using `python -m`; the `-m` option helps to run the library module as a script.
+Now you can run the script using `python -m`, where the `-m` option allows you to run the library module as a script.
 
 Try it out:
 
@@ -53,21 +53,21 @@ You can use the tool to:
 
 * Get the list of your Trello boards:
 
-```
-$ python -m trellocli list-boards
-```
+    ```
+    $ python -m trellocli list-boards
+    ```
 
 * Pick a *Board ID* from the previous response and get the list of the columns in that Trello board:
 
-```
-$ python -m trellocli list-columns <board-id>
-```
+    ```
+    $ python -m trellocli list-columns <board-id>
+    ```
 
 * Pick a *Column ID* from the previous response and create a new card (follow the instruction to add a comment and labels):
 
-```
-$ python -m trellocli create-card -c <column-id>
-```
+    ```
+    $ python -m trellocli create-card -c <column-id>
+    ```
 
 
 ### Run tests ###
@@ -105,5 +105,5 @@ Next developments:
 * Increase unit tests coverage (e.g. cli commands and exceptions cases)
 * Add integration tests for Trello API (need a Trello board for testing purposes)
 * Give a better structure to trello utils (atm objects, exceptions and functions live together)
-* Clean constants all around the code
+* Create a configuration manager for the CLI interface
 * Implement more functions (e.g. create columns, move cards, ...)
