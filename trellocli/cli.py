@@ -28,24 +28,36 @@ RED = typer.colors.RED
 YELLOW = typer.colors.YELLOW
 
 
-def get_trello_connector() -> TrelloClient:
-    trello_api_key = os.getenv('TRELLO_API_KEY', default=None)
-    trello_api_token = os.getenv('TRELLO_API_TOKEN', default=None)
-    if not trello_api_key:
-        typer.secho(messages.MSG_API_KEY_NOT_FOUND, fg=RED)
-        raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
-    if not trello_api_token:
-        typer.secho(messages.MSG_API_TOKEN_NOT_FOUND, fg=RED)
-        raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
-    return TrelloClient(trello_api_key, trello_api_token)
+class TrelloConnector:
+    """
+    A simple class that initializes and returns a Trello client.
+
+    The class tries to initialize a Trello client from environment variables first, and then from the given params.
+    If nothing is found, a configuration exception is raised.
+
+    The needed environment variables are two:
+     - TRELLO_API_KEY
+     - TRELLO_API_TOKEN
+    A sample template is available in the ´trellocli/.env.template´ file.
+    """
+    def __init__(self, trello_api_key: str = None, trello_api_token: str = None):
+        self.trello_api_key = os.getenv('TRELLO_API_KEY', default=trello_api_key)
+        self.trello_api_token = os.getenv('TRELLO_API_TOKEN', default=trello_api_token)
+        if not self.trello_api_key:
+            typer.secho(messages.MSG_API_KEY_NOT_FOUND, fg=RED)
+            raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
+        if not self.trello_api_token:
+            typer.secho(messages.MSG_API_TOKEN_NOT_FOUND, fg=RED)
+            raise typer.Exit(code=MISSING_CONFIGURATION_CODE)
+        self.client = TrelloClient(self.trello_api_key, self.trello_api_token)
 
 
 @app.command(name='list-boards')
 def list_boards() -> None:
     """Get the list of Trello boards with name and ID."""
-    trello_connector = get_trello_connector()
+    trello = TrelloConnector()
     try:
-        board_list = trello_connector.get_board_list()
+        board_list = trello.client.get_board_list()
     except Exception as e:
         typer.secho(e, fg=RED)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
@@ -60,9 +72,9 @@ def list_boards() -> None:
 @app.command(name='list-columns')
 def list_columns_by_board_id(board_id: str = typer.Argument(...)) -> None:
     """Get the list of columns by board ID."""
-    trello_connector = get_trello_connector()
+    trello = TrelloConnector()
     try:
-        board_columns = trello_connector.get_board_columns(board_id)
+        board_columns = trello.client.get_board_columns(board_id)
     except Exception as e:
         typer.secho(e, fg=RED)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
@@ -82,9 +94,9 @@ def create_card_by_column_id(
         labels: str = typer.Option(..., prompt=messages.MSG_LABELS_PROMPT, help=messages.MSG_LABELS_HELP),
 ) -> None:
     """Create a new Trello card given the the board column ID."""
-    trello_connector = get_trello_connector()
+    trello = TrelloConnector()
     try:
-        card = trello_connector.create_card(column_id, name, comment, labels.split())
+        card = trello.client.create_card(column_id, name, comment, labels.split())
     except Exception as e:
         typer.secho(e, fg=RED)
         raise typer.Exit(code=GENERIC_ERROR_CODE)
